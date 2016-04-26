@@ -35,7 +35,9 @@ timeout = setInterval(function() {
     var message = JSON.stringify({
         sensor: sensor,
         timestamp: new Date().toJSON(),
-        type: 'heartbeat'
+        type: 'heartbeat',
+        loadavg: os.loadavg(),
+        uptime: os.uptime(),
     })
 
     // publish to the heartbeat topic
