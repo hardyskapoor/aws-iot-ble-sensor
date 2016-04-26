@@ -16,25 +16,25 @@ This script subscribes to both topics and just prints out the messages it receiv
 This is what a detection message looks like:
 ```json
 {
-  "timestamp": "2016-04-26T16:42:26.065Z",
+  "timestamp": "2016-04-26T17:46:34.527Z",
   "type": "detection",
-  "sensor": "hostname",
-  "uuidmm": "699ebc80e1f311e39a0f0cf3ee3bc012:1/40173",
-  "proximity": "near"
+  "uuidmm": "699ebc80e1f311e39a0f0cf3ee3bc012:0/65535",
+  "proximity": "near",
+  "sensor": "hostname"
 }
 ```
 
 This is what a heartbeat message looks like:
 ```json
 {
-  "timestamp": "2016-04-26T16:42:20.152Z",
+  "timestamp": "2016-04-26T17:47:28.361Z",
   "type": "heartbeat",
-  "sensor": "wks52157.local",
+  "uptime": 78440,
   "loadavg": [
-    1.72021484375,
-    1.7294921875,
-    1.5888671875
+    0.794921875,
+    0.83349609375,
+    0.875
   ],
-  "uptime": 84597
+  "sensor": "hostname"
 }
 ```
