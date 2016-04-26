@@ -35,9 +35,9 @@ timeout = setInterval(function() {
     var message = JSON.stringify({
         timestamp: new Date().toJSON(),
         type: 'heartbeat',
-        sensor: sensor,
-        loadavg: os.loadavg(),
         uptime: os.uptime(),
+        loadavg: os.loadavg(),
+        sensor: sensor,
     })
 
     // publish to the heartbeat topic
@@ -64,9 +64,9 @@ ble
         var message = JSON.stringify({
             timestamp: new Date().toJSON(),
             type: 'detection',
-            sensor: sensor,
             uuidmm: beacon.uuid + ':' + beacon.major + '/' + beacon.minor,
-            proximity: beacon.proximity
+            proximity: beacon.proximity,
+            sensor: sensor
         });
 
         // publish to the detection topic
