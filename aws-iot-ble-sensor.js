@@ -1,19 +1,19 @@
-// AWS IoT Device app that continuously scans for and reports detected iBeacons 
+// AWS IoT Device app that continuously scans for and reports detected iBeacons - Sensor
 
+var os = require('os');
 var awsIot = require('aws-iot-device-sdk');
 var ble = require('bleacon');
-var os = require('os');
 
 
 
 // use the hostname to identify this instance of the sensor
 const sensor = os.hostname();
 
-// use this topic to publish heartbeats
-const topicHeartbeat = 'sensor-heartbeat';
+// use this topic for heartbeats
+const topicHeartbeat = 'heartbeat';
 
-// use this topic to publish detections
-const topicDetection = 'sensor-detection';
+// use this topic for detections
+const topicDetection = 'detection';
 
 
 
@@ -100,4 +100,8 @@ aws
 aws
     .on('error', function(error) {
         console.log('AWS IoT Device Gateway: Error -', error);
+    });
+aws
+    .on('message', function(topic, payload) {
+       console.log(payload.toString());
     });
