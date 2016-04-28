@@ -7,7 +7,7 @@ var ble = require('bleacon');
 
 
 // use the hostname to identify this instance of the sensor
-const sensor = os.hostname();
+const sensor = os.hostname().split('.').shift();
 
 // use this topic for heartbeats
 const topicHeartbeat = 'heartbeat';
