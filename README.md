@@ -1,6 +1,7 @@
 # aws-iot-ble-sensor
 
 This is a simple AWS IoT Device app that continuously scans for and reports detected iBeacons.
+Rules can then be setup to send the data to Amazon DynamoDB, Elasticsearch Service, Kinesis or Machine Learning.
 
 ## Usage
 
