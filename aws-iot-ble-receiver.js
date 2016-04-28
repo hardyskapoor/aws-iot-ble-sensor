@@ -7,7 +7,7 @@ var awsIot = require('aws-iot-device-sdk');
 
 
 // use the hostname to identify this instance of the receiver
-const receiver = os.hostname().split('.').shift();
+const receiver = os.hostname().split('.').shift() + '-receiver';
 
 // use this topic for heartbeats
 const topicHeartbeat = 'heartbeat';
