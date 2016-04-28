@@ -21,9 +21,12 @@ const topicDetection = 'detection';
 const aws = awsIot.device({
     keyPath: './certs/private.pem.key',
     certPath: './certs/certificate.pem.crt',
-    clientId: sensor,
     caPath: './certs/root-CA.crt',
-    region: 'eu-central-1'
+    region: 'eu-central-1',
+    clientId: sensor,
+    offlineQueueing: true,
+    offlineQueueMaxSize: 0,
+    drainTimeMs: 10
 });
 
 
@@ -41,7 +44,7 @@ timeout = setInterval(function() {
     })
 
     // publish to the heartbeat topic
-    aws.publish(topicHeartbeat, message);
+    aws.publish(topicHeartbeat, message, { qos: 1 });
 
     // also log to console
     console.log(message);
@@ -70,7 +73,7 @@ ble
         });
 
         // publish to the detection topic
-        aws.publish(topicDetection, message);
+        aws.publish(topicDetection, message, { qos: 1 });
 
         // also log to console
         console.log(message);

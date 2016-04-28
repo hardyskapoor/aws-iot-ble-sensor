@@ -21,9 +21,9 @@ const topicDetection = 'detection';
 const aws = awsIot.device({
     keyPath: './certs/private.pem.key',
     certPath: './certs/certificate.pem.crt',
-    clientId: receiver,
     caPath: './certs/root-CA.crt',
-    region: 'eu-central-1'
+    region: 'eu-central-1,
+    clientId: receiver
 });
 
 
