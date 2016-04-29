@@ -6,6 +6,17 @@ var ble = require('bleacon');
 
 
 
+// parse command line arguments
+var commandLineArgs = require('command-line-args');
+
+var args = commandLineArgs([
+  { name: 'verbose', alias: 'v', type: Boolean, defaultValue: false },
+])
+
+var options = args.parse()
+
+
+
 // use the hostname to identify this instance of the sensor
 const sensor = os.hostname().split('.').shift();
 
@@ -46,8 +57,10 @@ timeout = setInterval(function() {
     // publish to the heartbeat topic
     aws.publish(topicHeartbeat, message, { qos: 1 });
 
-    // also log to console
-    console.log(message);
+    if (options.verbose) {
+      // also log to console
+      console.log(message);
+    }
 }, 5000);
 
 
@@ -75,8 +88,10 @@ ble
         // publish to the detection topic
         aws.publish(topicDetection, message, { qos: 1 });
 
-        // also log to console
-        console.log(message);
+        if (options.verbose) {
+          // also log to console
+          console.log(message);
+        }
     });
 
 

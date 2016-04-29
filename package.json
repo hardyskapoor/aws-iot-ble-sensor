@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "aws-iot-device-sdk": "1.0.*",
-    "bleacon": "0.4.0"
+    "bleacon": "0.4.*",
+    "command-line-args": "2.1.6"
   }
 }
