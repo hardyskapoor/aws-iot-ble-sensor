@@ -11,9 +11,67 @@ var commandLineArgs = require('command-line-args');
 
 var args = commandLineArgs([
   { name: 'verbose', alias: 'v', type: Boolean, defaultValue: false },
+  { name: 'led', alias: 'l', type: Boolean, defaultValue: false },
 ])
 
 var options = args.parse()
+
+
+
+//
+// LED blinking
+//
+
+// which gpio pins correspond to the r, g & b leds
+// rgb led recommended, eg: http://www.monkmakes.com/squid/
+const led_r = 12;
+const led_g = 16;
+const led_b = 18;
+
+// start with red
+var led=led_r;
+
+// to switch color, set this to the new one
+var led_switch=0;
+
+// set the blink frequency
+var blink_on = 10;
+var blink_off = 4990;
+
+if (options.led) {
+  try {
+     var gpio = require('rpi-gpio');
+  } catch(err) {
+     console.error("LED: Not found");
+     options.led=false;
+  }
+}
+
+if (options.led) {
+  // setup gpio for the led
+  gpio.setup(led_r, gpio.DIR_OUT);
+  gpio.setup(led_g, gpio.DIR_OUT);
+  gpio.setup(led_b, gpio.DIR_OUT);
+
+  // start blinking LED
+  led_on();
+
+  function led_on() {
+      setTimeout(function() {
+          gpio.write(led, 1, led_off);
+      }, blink_off);
+  }
+
+  function led_off() {
+      setTimeout(function() {
+        gpio.write(led, 0, led_on);
+        if (led_switch !=0) {
+            led=led_switch;
+            led_switch=0;
+        }
+    }, blink_on);
+  }
+}
 
 
 
