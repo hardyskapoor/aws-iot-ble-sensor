@@ -161,22 +161,42 @@ ble
 aws
     .on('connect', function() {
         console.log('AWS IoT Device Gateway: Connected');
+        if (options.led) {
+          // switch led to blue
+          led_switch=led_b;
+        }
     });
 aws
     .on('close', function() {
         console.log('AWS IoT Device Gateway: Closed');
+        if (options.led) {
+          // switch led to red
+          led_switch=led_r;
+        }
     });
 aws
     .on('reconnect', function() {
         console.log('AWS IoT Device Gateway: Reconnected');
+        if (options.led) {
+          // switch led to blue
+          led_switch=led_b;
+        }
     });
 aws
     .on('offline', function() {
         console.log('AWS IoT Device Gateway: Offline');
+        if (options.led) {
+          // switch led to red
+          led_switch=led_r;
+        }
     });
 aws
     .on('error', function(error) {
         console.log('AWS IoT Device Gateway: Error -', error);
+        if (options.led) {
+          // switch led to red
+          led_switch=led_r;
+        }
     });
 aws
     .on('message', function(topic, payload) {
