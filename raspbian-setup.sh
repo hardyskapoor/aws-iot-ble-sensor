@@ -5,13 +5,6 @@
 # curl -sL https://raw.githubusercontent.com/kkonstan/aws-iot-ble-sensor/master/raspbian-setup.sh | sudo -E bash -
 #
 
-DISTRO=$(lsb_release -c -s 2>/dev/null)
-
-if [ "X${DISTRO}" != "Xjessie" ]; then
-	echo "This installer only supports Raspbian Jessie, aborting."
-	exit 1
-fi
-
 export DEBIAN_FRONTEND=noninteractive
 
 # Install the NodeSource Node.js 6.x repo
