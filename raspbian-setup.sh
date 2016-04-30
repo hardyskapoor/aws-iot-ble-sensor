@@ -44,9 +44,15 @@ print_status "Installing aws-iot-ble-sensor dependencies..."
 cd /opt/aws-iot-ble-sensor
 exec_cmd 'npm install'
 
-print_status "Preparing /boot/setup/certs for the AWS IoT certs..."
-mkdir -p /boot/setup/certs
-exec_cmd 'ln -s /boot/setup/certs /opt/aws-iot-ble-sensor/certs'
+print_status "Preparing /boot/setup/aws-iot-cert for the AWS IoT cert..."
+mkdir -p /boot/setup/aws-iot-cert
+exec_cmd 'ln -s /boot/setup/aws-iot-cert /opt/aws-iot-ble-sensor/certs'
+
+print_status "Preparing /boot/setup/wifi for the WiFi config..."
+mkdir -p /boot/setup/wifi
+touch /boot/setup/wifi/wpa_supplicant.conf 
+rm -rf /etc/wpa_supplicant/wpa_supplicant.conf
+exec_cmd 'ln -s /boot/setup/wifi/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf'
 
 print_status "Setting up Supervisor to startup and monitor aws-iot-ble-sensor..."
 cat >/etc/supervisor/conf.d/aws-iot-ble-sensor.conf <<EOF
