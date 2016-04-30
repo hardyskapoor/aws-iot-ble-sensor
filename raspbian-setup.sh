@@ -49,7 +49,7 @@ mkdir -p /boot/setup/certs
 exec_cmd 'ln -s /boot/setup/certs /opt/aws-iot-ble-sensor/certs'
 
 print_status "Setting up Supervisor to startup and monitor aws-iot-ble-sensor..."
-cat >/etc/supervisor/conf.d <<EOF
+cat >/etc/supervisor/conf.d/aws-iot-ble-sensor.conf <<EOF
 [program:aws-iot-ble-sensor]
 directory=/opt/aws-iot-ble-sensor/
 command=/usr/bin/nodejs /opt/aws-iot-ble-sensor/aws-iot-ble-sensor.js -l
