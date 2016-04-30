@@ -3,8 +3,30 @@
 This is a simple AWS IoT Device app that continuously scans for and reports detected iBeacons.
 Rules can then be setup to send the data to Amazon DynamoDB, Elasticsearch Service, Kinesis or Machine Learning.
 
+## Installation
+
+This app is intended to be run on Raspberry Pi 3 running Raspbian Jessie. 
+
+- Download the Raspbian Jessie Lite image from the [official downloads page](https://www.raspberrypi.org/downloads/raspbian/)
+- Install Raspbian image to an SD card following the [installation guide](https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
+- Boot the device, login and run the automated setup script: ```curl -sL https://raw.githubusercontent.com/kkonstan/aws-iot-ble-sensor/master/raspbian-setup.sh | sudo -E bash -```
+- Copy AWS IoT certificates to ```/boot/setup/aws-iot-cert/```
+- Set a unique hostname (will be used as AWS IoT clientId) in ```/boot/setup/hostname```
+- Optionally setup WiFi in ```/boot/setup/wifi/wpa_supplicant.conf```
+
+Example ```wpa_supplicant.conf```:
+```country=GB
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+network={
+	ssid=“My Network”
+	psk=“My Pre-Shared Key”
+}
+```
+
 ## Usage
 
+For testing purposes the scripts can also be run on OS X and Linux.
 
 ### aws-iot-ble-sensor.js
 
