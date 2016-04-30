@@ -15,7 +15,8 @@ This app is intended to be run on Raspberry Pi 3 running Raspbian Jessie.
 - Optionally setup WiFi in ```/boot/setup/wifi/wpa_supplicant.conf```
 
 Example ```wpa_supplicant.conf```:
-```country=GB
+```
+country=GB
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 network={
