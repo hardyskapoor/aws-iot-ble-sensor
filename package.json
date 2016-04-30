@@ -1,7 +1,7 @@
 {
   "name": "aws-iot-ble-sensor",
   "description": "AWS IoT Device app that continuously scans for and reports detected iBeacons",
-  "version" : "0.0.1",
+  "version" : "0.1.0",
   "license": "BSD-2-Clause",
   "author": {
     "name": "Konstantinos Konstantinidis",

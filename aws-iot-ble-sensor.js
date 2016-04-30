@@ -1,12 +1,13 @@
-// AWS IoT Device app that continuously scans for and reports detected iBeacons - Sensor
+// AWS IoT Device app that continuously scans for and reports detected iBeacons
 
-var os = require('os');
-var awsIot = require('aws-iot-device-sdk');
-var ble = require('bleacon');
+var version = "0.1.0";
 
 
 
-// parse command line arguments
+//
+// Parse command line arguments
+//
+
 var commandLineArgs = require('command-line-args');
 
 var args = commandLineArgs([
@@ -19,7 +20,7 @@ var options = args.parse()
 
 
 //
-// LED blinking
+// Status LED blinking
 //
 
 // which gpio pins correspond to the r, g & b leds
@@ -75,7 +76,12 @@ if (options.led) {
 
 
 
+//
+// AWS IoT connection
+//
+
 // use the hostname to identify this instance of the sensor
+var os = require('os');
 const sensor = os.hostname().split('.').shift();
 
 // use this topic for heartbeats
@@ -84,9 +90,8 @@ const topicHeartbeat = 'heartbeat';
 // use this topic for detections
 const topicDetection = 'detection';
 
-
-
 // connect to AWS IoT
+var awsIot = require('aws-iot-device-sdk');
 const aws = awsIot.device({
     keyPath: './certs/private.pem.key',
     certPath: './certs/certificate.pem.crt',
@@ -98,8 +103,6 @@ const aws = awsIot.device({
     drainTimeMs: 10
 });
 
-
-
 // publish a heartbeat every 5 seconds
 timeout = setInterval(function() {
 
@@ -107,6 +110,7 @@ timeout = setInterval(function() {
     var message = JSON.stringify({
         timestamp: new Date().toJSON(),
         type: 'heartbeat',
+        version: version,
         uptime: os.uptime(),
         loadavg: os.loadavg(),
         sensor: sensor,
@@ -121,43 +125,7 @@ timeout = setInterval(function() {
     }
 }, 5000);
 
-
-// start scanning for iBeacons
-ble.startScanning();
-
-
-
-//
-//   Bleacon event handlers
-//
-
-ble
-    .on('discover', function(beacon) {
-
-        // prepare JSON message
-        var message = JSON.stringify({
-            timestamp: new Date().toJSON(),
-            type: 'detection',
-            uuidmm: beacon.uuid + ':' + beacon.major + '/' + beacon.minor,
-            proximity: beacon.proximity,
-            sensor: sensor
-        });
-
-        // publish to the detection topic
-        aws.publish(topicDetection, message, { qos: 1 });
-
-        if (options.verbose) {
-          // also log to console
-          console.log(message);
-        }
-    });
-
-
-
-// 
-// AWS IoT event handlers
-//
-
+// event handlers
 aws
     .on('connect', function() {
         console.log('AWS IoT Device Gateway: Connected');
@@ -201,4 +169,35 @@ aws
 aws
     .on('message', function(topic, payload) {
        console.log(payload.toString());
+    });
+
+
+
+//
+// iBeacon scanning
+//
+
+var ble = require('bleacon');
+ble.startScanning();
+
+// event handler
+ble
+    .on('discover', function(beacon) {
+
+        // prepare JSON message
+        var message = JSON.stringify({
+            timestamp: new Date().toJSON(),
+            type: 'detection',
+            uuidmm: beacon.uuid + ':' + beacon.major + '/' + beacon.minor,
+            proximity: beacon.proximity,
+            sensor: sensor
+        });
+
+        // publish to the detection topic
+        aws.publish(topicDetection, message, { qos: 1 });
+
+        if (options.verbose) {
+          // also log to console
+          console.log(message);
+        }
     });
