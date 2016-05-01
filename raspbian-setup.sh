@@ -54,10 +54,15 @@ touch /boot/setup/wifi/wpa_supplicant.conf
 rm -rf /etc/wpa_supplicant/wpa_supplicant.conf
 exec_cmd 'ln -s /boot/setup/wifi/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf'
 
-print_status "Preparing /boot/setup/hostname for the hostname/clientId setup..."
-touch /boot/setup/hostname
+print_status "Setting up hostname to be derived from serial number..."
 rm -rf /etc/hostname
-exec_cmd 'ln -s /boot/setup/hostname /etc/hostname'
+cat >/etc/init.d/sethostname.sh <<EOF
+#!/bin/bash
+hostname `cat /proc/cpuinfo | grep Serial | awk -F ': ' '{ print $2 }' | sed -e "s/^0*/pi-/"`
+sed -i -e "s/^127\.0\.1\.1.*/127.0.1.1\t`hostname`/" /etc/hosts
+EOF
+chmod +x /etc/init.d/sethostname.sh
+exec_cmd 'ln -s ../init.d/sethostname.sh /etc/rcS.d/S00sethostname.sh'
 
 print_status "Setting up Supervisor to startup and monitor aws-iot-ble-sensor..."
 cat >/etc/supervisor/conf.d/aws-iot-ble-sensor.conf <<EOF
