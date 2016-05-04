@@ -11,7 +11,6 @@ This app is intended to be run on Raspberry Pi 3 running Raspbian Jessie.
 - Install Raspbian image to an SD card following the [installation guide](https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
 - Boot the device, login and run the automated setup script: ```curl -sL https://raw.githubusercontent.com/kkonstan/aws-iot-ble-sensor/master/raspbian-setup.sh | sudo -E bash -```
 - Copy AWS IoT certificates to ```/boot/setup/aws-iot-cert/```
-- Set a unique hostname (will be used as AWS IoT clientId) in ```/boot/setup/hostname```
 - Optionally setup WiFi in ```/boot/setup/wifi/wpa_supplicant.conf```
 
 Example ```wpa_supplicant.conf```:
@@ -24,6 +23,8 @@ network={
 	psk=“My Pre-Shared Key”
 }
 ```
+
+The above setup script will also install a script that will automatically set the hostname (which is also used as a clientId when connecting to AWS IoT) based on the serial number of the CPU. This means that the SD card can be copied and used by any number of Raspberry Pis and each will connect and report a unique hostname as clientID.
 
 ## Usage
 
