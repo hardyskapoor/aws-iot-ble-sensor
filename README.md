@@ -32,7 +32,13 @@ For testing purposes the scripts can also be run on OS X and Linux.
 
 ### aws-iot-ble-sensor.js
 
-This script listens for ibeacons and reports them to the topic ‘detection’ and also sends a heartbeat every 5 seconds to topic ‘heartbeat’.
+This script listens for ibeacons and reports them to the topic ‘detection’ and also sends a heartbeat every 60 seconds to topic ‘heartbeat’.
+
+Options:
+
+  * -v or --verbose to emmit debug messages to the console
+  * -t or --throttle to supress reporting beacons more than once per 10 seconds
+  * -l or --led to display status via controlling LEDs connected to GPIO pins
 
 ### aws-iot-ble-receiver.js
 
@@ -54,6 +60,7 @@ This is what a heartbeat message looks like:
 {
   "timestamp": "2016-04-26T17:47:28.361Z",
   "type": "heartbeat",
+  "version":"0.2.1",
   "uptime": 78440,
   "loadavg": [
     0.794921875,
