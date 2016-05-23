@@ -1,6 +1,6 @@
 // AWS IoT Device app that continuously scans for and reports detected iBeacons
 
-var version = "0.1.0";
+var version = "0.2.0";
 
 
 
@@ -12,6 +12,7 @@ var commandLineArgs = require('command-line-args');
 
 var args = commandLineArgs([
   { name: 'verbose', alias: 'v', type: Boolean, defaultValue: false },
+  { name: 'throttle', alias: 't', type: Boolean, defaultValue: false },
   { name: 'led', alias: 'l', type: Boolean, defaultValue: false },
 ])
 
@@ -180,24 +181,45 @@ aws
 var ble = require('bleacon');
 ble.startScanning();
 
+if (options.throttle) {
+   var HashMap = require('hashmap');
+   var map = new HashMap();
+}
+
 // event handler
 ble
     .on('discover', function(beacon) {
 
-        // prepare JSON message
-        var message = JSON.stringify({
-            timestamp: new Date().toJSON(),
-            type: 'detection',
-            uuidmm: beacon.uuid + ':' + beacon.major + '/' + beacon.minor,
-            proximity: beacon.proximity,
-            sensor: sensor
-        });
+        discoverTimestamp = new Date();
+        var discoverUuidmm = beacon.uuid + ':' + beacon.major + '/' + beacon.minor
 
-        // publish to the detection topic
-        aws.publish(topicDetection, message, { qos: 1 });
+        if ((options.throttle) && ((discoverTimestamp - map.get(discoverUuidmm)) < 10000)) {
+          // ignore detections reported less than 10 seconds ago
 
-        if (options.verbose) {
-          // also log to console
-          console.log(message);
+          if (options.verbose) {
+            // also log to console
+            console.log('Ignoring ' + discoverUuidmm + ' last detected ' + (discoverTimestamp - map.get(discoverUuidmm)) + 'ms ago');
+          }
+        } else {
+          // prepare JSON message
+          var message = JSON.stringify({
+              timestamp: discoverTimestamp.toJSON(),
+              type: 'detection',
+              uuidmm: discoverUuidmm,
+              proximity: beacon.proximity,
+              sensor: sensor
+          })
+
+          // publish to the detection topic
+          aws.publish(topicDetection, message, { qos: 1 });
+
+          if (options.throttle) {
+            // update the timestamp of last publish for that uuidmm
+            map.set(discoverUuidmm, discoverTimestamp);
+          };
+          if (options.verbose) {
+            // also log to console
+            console.log(message);
+          }
         }
     });
