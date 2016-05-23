@@ -1,6 +1,6 @@
 // AWS IoT Device app that continuously scans for and reports detected iBeacons
 
-var version = "0.2.0";
+var version = "0.2.1";
 
 
 
@@ -104,7 +104,7 @@ const aws = awsIot.device({
     drainTimeMs: 10
 });
 
-// publish a heartbeat every 5 seconds
+// publish a heartbeat every 60 seconds
 timeout = setInterval(function() {
 
     // prepare JSON message
@@ -124,7 +124,7 @@ timeout = setInterval(function() {
       // also log to console
       console.log(message);
     }
-}, 5000);
+}, 60000);
 
 // event handlers
 aws
