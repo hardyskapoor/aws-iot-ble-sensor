@@ -1,6 +1,6 @@
 // AWS IoT Device app that continuously scans for and reports detected iBeacons
 
-var version = "0.2.1";
+var version = "0.2.2";
 
 
 
@@ -97,7 +97,7 @@ const aws = awsIot.device({
     keyPath: './certs/private.pem.key',
     certPath: './certs/certificate.pem.crt',
     caPath: './certs/root-CA.crt',
-    region: 'eu-central-1',
+    region: 'eu-west-1',
     clientId: sensor,
     offlineQueueing: true,
     offlineQueueMaxSize: 0,
