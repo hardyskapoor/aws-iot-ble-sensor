@@ -58,14 +58,14 @@ offline = setInterval(function() {
 
       if (age > offlineThreshold) {
          // if sensor hasn'd reported recently announce it as newly offline
-         console.log('Sensor', sensor, 'now offline at', now.toISOString(), '(last heartbeat', age, 'sec ago, threshold is', offlineThreshold + 'sec)');
+         console.log('Sensor', sensor, 'now offline at', now.toJSON(), '(last heartbeat', age, 'sec ago, threshold is', offlineThreshold + 'sec)');
          // and remove it form the list
          map.remove(sensor);
       }
 
       if (options.verbose) {
         // log to console each sensor and timestamp/seconds since last heard
-        console.log(sensor, last.toISOString(), age, 'sec ago');
+        console.log(sensor, last.toJSON(), age, 'sec ago');
       }
     });
 }, 10000);
@@ -76,7 +76,7 @@ report = setInterval(function() {
 
     if (options.verbose) {
       // also log to console
-      console.log('Reporting to file at', now.toJSON());
+      console.log('Reporting to file at', now.toString());
     }
 
     var counter = 0;
@@ -84,14 +84,14 @@ report = setInterval(function() {
     var fs = require('fs');
     var stream = fs.createWriteStream(statusFile);
     stream.once('open', function(fd) {
-      stream.write('<html><head><title>Status of sensors</title><meta http-equiv=\"refresh\" content=\"10\"></head><body><h1>Status of sensors as of ' + now.toJSON() + '</h1><table>\n');
+      stream.write('<html><head><title>Status of sensors</title><meta http-equiv=\"refresh\" content=\"10\"></head><body><h1>Status of sensors as of ' + now.toString() + '</h1><table><tr><th>Sensor</th><th>Last heartbeat</th></tr>\n');
 
       map.forEach(function(timestamp, sensor) {
         last = new Date(timestamp);
         // calculate how many seconds since the last timestamp
         age = parseInt((now - last)/1000);
 
-        stream.write('<tr><td>' + sensor + '</td><td>' + last.toISOString() + '</td></tr>');
+        stream.write('<tr><td>' + sensor + '</td><td>' + last.toJSON() + '</td></tr>');
         counter++;
       });
       stream.write('</table><p>' + counter + ' sensors active during last ' + offlineThreshold + ' sec</p></body></html>\n');
