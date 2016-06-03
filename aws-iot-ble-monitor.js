@@ -18,8 +18,8 @@ var options = args.parse()
 var HashMap = require('hashmap');
 var map = new HashMap();
 
-const offlineThreshold = 15;
-const statusFile = '/var/www/html/status.txt';
+const offlineThreshold = 180;
+const statusFile = '/var/www/html/status.html';
 
 
 //
@@ -43,7 +43,7 @@ const aws = awsIot.device({
     clientId: monitor
 });
 
-// check for offline sensors every 60 seconds
+// check for offline sensors every 10 seconds
 offline = setInterval(function() {
     now = new Date();
 
@@ -68,9 +68,9 @@ offline = setInterval(function() {
         console.log(sensor, last.toISOString(), age, 'sec ago');
       }
     });
-}, 60000);
+}, 10000);
 
-// report active sensors every 60 seconds to a file
+// report active sensors every 10 seconds to a file
 report = setInterval(function() {
     now = new Date();
 
@@ -84,20 +84,20 @@ report = setInterval(function() {
     var fs = require('fs');
     var stream = fs.createWriteStream(statusFile);
     stream.once('open', function(fd) {
-      stream.write('Status as of ' + now.toJSON() + '\n');
+      stream.write('<html><head><title>Status of sensors</title><meta http-equiv=\"refresh\" content=\"10\"></head><body><h1>Status of sensors as of ' + now.toJSON() + '</h1><table>\n');
 
       map.forEach(function(timestamp, sensor) {
         last = new Date(timestamp);
         // calculate how many seconds since the last timestamp
         age = parseInt((now - last)/1000);
 
-        stream.write(sensor + ' last heartbeat at ' + last.toISOString() + '\n');
+        stream.write('<tr><td>' + sensor + '</td><td>' + last.toISOString() + '</td></tr>');
         counter++;
       });
-      stream.write('' + counter + ' sensors active during last ' + offlineThreshold + ' sec\n');
+      stream.write('</table><p>' + counter + ' sensors active during last ' + offlineThreshold + ' sec</p></body></html>\n');
       stream.end();
     });
-}, 60000);
+}, 10000);
 
 // subscribe to the topic
 aws.subscribe(topicHeartbeat);
