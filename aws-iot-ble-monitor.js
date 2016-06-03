@@ -10,6 +10,7 @@ var commandLineArgs = require('command-line-args');
 
 var args = commandLineArgs([
   { name: 'verbose', alias: 'v', type: Boolean, defaultValue: false },
+  { name: 'email', alias: 'e', type: Boolean, defaultValue: false },
 ])
 
 var options = args.parse()
@@ -20,6 +21,8 @@ var map = new HashMap();
 
 const offlineThreshold = 180;
 const statusFile = '/var/www/html/status.html';
+const alertEmail = 'root@127.0.0.1'
+
 
 
 //
@@ -29,6 +32,7 @@ const statusFile = '/var/www/html/status.html';
 // use the hostname to identify this instance of the monitor
 var os = require('os');
 const monitor = os.hostname().split('.').shift() + '-monitor';
+const mailFrom = 'monitor@' + os.hostname();
 
 // use this topic for heartbeats
 const topicHeartbeat = 'heartbeat';
@@ -58,11 +62,21 @@ offline = setInterval(function() {
 
       if (age > offlineThreshold) {
          // if sensor hasn'd reported recently announce it as newly offline
-         console.log('Sensor', sensor, 'now offline at', now.toJSON(), '(last heartbeat', age, 'sec ago, threshold is', offlineThreshold + 'sec)');
+         console.log('Sensor', sensor, 'offline at', now.toJSON(), '(last heartbeat', age, 'sec ago, threshold is', offlineThreshold + 'sec)');
          // and remove it form the list
          map.remove(sensor);
+         if (options.email) {
+           // also sent email
+           var Email = require('email').Email
+           var myMsg = new Email(
+           { from: mailFrom,
+             to:   alertEmail,
+             subject: 'Sensor ' + sensor + ' offline',
+             body: 'Sensor ' + sensor + ' offline at ' + now.toJSON() + ' (last heartbeat ' + age + ' sec ago, threshold is ' + offlineThreshold + ' sec)',
+           })
+           myMsg.send();
+         }
       }
-
       if (options.verbose) {
         // log to console each sensor and timestamp/seconds since last heard
         console.log(sensor, last.toJSON(), age, 'sec ago');
@@ -140,7 +154,19 @@ aws
 
        if (! map.has(heartbeat.sensor)) {
          // if sensor is not on our list announce it as newly online
-         console.log('Sensor', heartbeat.sensor, 'now  online at', heartbeat.timestamp, '(uptime', parseInt(heartbeat.uptime/60), 'minutes)');
+         console.log('Sensor', heartbeat.sensor, '  online at', heartbeat.timestamp, '(uptime', parseInt(heartbeat.uptime/60), 'minutes)');
+
+         if (options.email) {
+           // also sent email
+           var Email = require('email').Email
+           var myMsg = new Email(
+           { from: mailFrom,
+             to:   alertEmail,
+             subject: 'Sensor ' + heartbeat.sensor + ' online',
+             body: 'Sensor ' + heartbeat.sensor + ' online at ' + heartbeat.timestamp + ' (uptime ' + parseInt(heartbeat.uptime/60) + ' minutes)',
+           })
+           myMsg.send();
+         }
        }
 
        // update the last heard from timestamp
