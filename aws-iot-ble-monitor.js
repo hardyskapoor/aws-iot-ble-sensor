@@ -19,6 +19,7 @@ var HashMap = require('hashmap');
 var map = new HashMap();
 
 const offlineThreshold = 15;
+const statusFile = '/var/www/html/status.txt';
 
 
 //
@@ -67,35 +68,43 @@ offline = setInterval(function() {
         console.log(sensor, last.toISOString(), age, 'sec ago');
       }
     });
-}, 10000);
+}, 60000);
 
-
-// report active sensors every 60 seconds
-
+// report active sensors every 60 seconds to a file
 report = setInterval(function() {
     now = new Date();
+
+    if (options.verbose) {
+      // also log to console
+      console.log('Reporting to file at', now.toJSON());
+    }
+
     var counter = 0;
 
-    console.log('Status as of', now.toJSON());
+    var fs = require('fs');
+    var stream = fs.createWriteStream(statusFile);
+    stream.once('open', function(fd) {
+      stream.write('Status as of ' + now.toJSON() + '\n');
 
-    map.forEach(function(timestamp, sensor) {
-      last = new Date(timestamp);
-      // calculate how many seconds since the last timestamp
-      age = parseInt((now - last)/1000);
+      map.forEach(function(timestamp, sensor) {
+        last = new Date(timestamp);
+        // calculate how many seconds since the last timestamp
+        age = parseInt((now - last)/1000);
 
-      console.log(sensor, 'last heartbeat at' , last.toISOString());
-      counter++;
+        stream.write(sensor + ' last heartbeat at ' + last.toISOString() + '\n');
+        counter++;
+      });
+      stream.write('' + counter + ' sensors active during last ' + offlineThreshold + ' sec\n');
+      stream.end();
     });
-    console.log('' + counter, 'sensors active during last', offlineThreshold, 'sec');
-    console.log('');
-}, 10000);
+}, 60000);
 
 // subscribe to the topic
 aws.subscribe(topicHeartbeat);
 
 
 
-// 
+//
 // AWS IoT event handlers
 //
 
@@ -124,7 +133,7 @@ aws
        if (options.verbose) {
          // also log to consolepp
          console.log(payload.toString());
-       } 
+       }
 
        // parse payload
        heartbeat = JSON.parse(payload);
