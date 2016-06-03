@@ -154,7 +154,7 @@ aws
 
        if (! map.has(heartbeat.sensor)) {
          // if sensor is not on our list announce it as newly online
-         console.log('Sensor', heartbeat.sensor, '  online at', heartbeat.timestamp, '(uptime', parseInt(heartbeat.uptime/60), 'minutes)');
+         console.log('Sensor', heartbeat.sensor, ' online at', heartbeat.timestamp, '(uptime', parseInt(heartbeat.uptime/60), 'minutes)');
 
          if (options.email) {
            // also sent email
